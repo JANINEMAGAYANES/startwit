@@ -1,7 +1,8 @@
 import 'leaflet/dist/leaflet.css';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import L from 'leaflet';
-import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
+import { IconButton } from '@chakra-ui/react';
 
 
 
@@ -18,11 +19,13 @@ const mapPinIcon = L.divIcon({
 });
 
 function IssueMarker({ id, position, popupConfig, onPick = null }) {
+    const map = useMapEvents({})
     return <Marker position={position} icon={issueIcon} eventHandlers={{
-        click: () => {console.log('inner', id);onPick(id)},
-    }}>
-        {popupConfig ? <Popup>{popupConfig.description}</Popup> : null}
-    </Marker>
+        click: () => {
+            map.flyTo({ lat: position[0], lng: position[1] }, 13);
+            onPick(id)
+        },
+    }} />
 }
 
 function LocateControl() {
@@ -34,7 +37,9 @@ function LocateControl() {
     })
 
     return <div className={'leaflet-top leaflet-right'} onClick={() => map.locate()}>
-        <div className="leaflet-control leaflet-bar">Center</div>
+        <IconButton className="leaflet-control leaflet-bar" icon={<i class="fa-solid fa-location-crosshairs"></i>}>
+        </IconButton>
+        {/* <div className="leaflet-control leaflet-bar">Center</div> */}
     </div>;
 
 }
@@ -56,7 +61,7 @@ function PinLocation() {
 
 export default function Map({ center = null, zoom = 10, markers = [], onPickMarker }) {
     return <MapContainer
-        style={{ height: '100%' }}
+        style={{ height: '100%', zIndex: 0 }}
         center={[38, 139.69222]}
         zoom={6}
         minZoom={3}

@@ -21,6 +21,7 @@ function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/Report" element={<Report />} />
       <Route path="/form" element={<Form />} />
+      <Route path="/" element={<Home />} />
       </Routes>
   </Router>
   </ChakraProvider>
