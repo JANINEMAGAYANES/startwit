@@ -1,11 +1,25 @@
 import 'leaflet/dist/leaflet.css';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import L from 'leaflet';
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet';
 
 
-function IssueMarker({ position, popupConfig, onPick = null }) {
-    return <Marker position={position} eventHandlers={{
-        click: onPick,
+
+const issueIcon = L.divIcon({
+    html: '<span style="font-size: 3em; color: Tomato;"><i class="fa-solid fa-location-dot fa-xl"></i></span>',
+    iconSize: [20, 20],
+    className: ''
+});
+
+const mapPinIcon = L.divIcon({
+    html: '<span style="font-size: 3em; color: Tomato;"><i class="fa-solid fa-map-pin"></i></span>',
+    iconSize: [20, 20],
+    className: ''
+});
+
+function IssueMarker({ id, position, popupConfig, onPick = null }) {
+    return <Marker position={position} icon={issueIcon} eventHandlers={{
+        click: () => {console.log('inner', id);onPick(id)},
     }}>
         {popupConfig ? <Popup>{popupConfig.description}</Popup> : null}
     </Marker>
@@ -24,6 +38,22 @@ function LocateControl() {
     </div>;
 
 }
+
+function PinLocation() {
+    const [location, setLocation] = useState();
+    const map = useMapEvents({
+        locationfound({ latlng }) {
+            setLocation(latlng);
+        },
+    });
+    useEffect(() => { map.locate() }, [map]);
+
+    return location ? <Marker position={location} icon={mapPinIcon}>
+
+    </Marker> : null;
+
+}
+
 export default function Map({ center = null, zoom = 10, markers = [], onPickMarker }) {
     return <MapContainer
         style={{ height: '100%' }}
@@ -38,6 +68,7 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
             url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
         />
 
+        <PinLocation />
         {markers.map(({ id, ...marker }) => <IssueMarker key={id} {...marker} onPick={onPickMarker} />)}
         <LocateControl />
     </MapContainer>
