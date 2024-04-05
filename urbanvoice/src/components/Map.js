@@ -5,6 +5,8 @@ import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
 import { IconButton } from '@chakra-ui/react';
 
 
+const CLOSEUP_ZOOM = 13;
+const FLY_DURATION = 0.7;
 
 const issueIcon = L.divIcon({
     html: '<span style="font-size: 3em; color: Tomato;"><i class="fa-solid fa-location-dot fa-xl"></i></span>',
@@ -22,7 +24,7 @@ function IssueMarker({ id, position, popupConfig, onPick = null }) {
     const map = useMapEvents({})
     return <Marker position={position} icon={issueIcon} eventHandlers={{
         click: () => {
-            map.flyTo({ lat: position[0], lng: position[1] }, 13);
+            map.flyTo({ lat: position[0], lng: position[1] }, CLOSEUP_ZOOM, {duration: 0.7});
             onPick(id)
         },
     }} />
@@ -31,7 +33,7 @@ function IssueMarker({ id, position, popupConfig, onPick = null }) {
 function LocateControl() {
     const map = useMapEvents({
         locationfound(e) {
-            map.flyTo(e.latlng, 13);
+            map.flyTo(e.latlng, CLOSEUP_ZOOM, {duration: FLY_DURATION});
 
         },
     })
@@ -39,7 +41,6 @@ function LocateControl() {
     return <div className={'leaflet-top leaflet-right'} onClick={() => map.locate()}>
         <IconButton className="leaflet-control leaflet-bar" icon={<i class="fa-solid fa-location-crosshairs"></i>}>
         </IconButton>
-        {/* <div className="leaflet-control leaflet-bar">Center</div> */}
     </div>;
 
 }
