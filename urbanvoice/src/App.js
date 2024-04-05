@@ -1,3 +1,4 @@
+import React, { createContext, useContext, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -6,8 +7,14 @@ import Report from './screen/Report';
 import Form from './components/Form';
 import { ChakraProvider } from '@chakra-ui/react'
 
+
+export const ImageContext = createContext();
 function App() {
+  const [imageSrc, setImageSrc] = useState(null);
+
   return (
+    <ImageContext.Provider value={{ imageSrc, setImageSrc }}>
+
     <ChakraProvider>
     <Router>
     <Routes>
@@ -17,6 +24,7 @@ function App() {
       </Routes>
   </Router>
   </ChakraProvider>
+  </ImageContext.Provider>
   );
 }
 
