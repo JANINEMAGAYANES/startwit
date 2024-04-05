@@ -1,21 +1,39 @@
-import React from 'react';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import { useState } from 'react';
+import { useSpeechRecognition } from 'react-speech-kit';
 
-const RecordButton = () => {
-  const { transcript, resetTranscript, listening, startListening, stopListening } = useSpeechRecognition();
+function RecordButton() {
+  // State to store the recognized speech text
+  const [value, setValue] = useState('');
 
-  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
-    return <div>Your browser does not support speech recognition.</div>;
-  }
+  // useSpeechRecognition hook to handle speech recognition
+  const { listen, stop } = useSpeechRecognition({
+   
 
+        onResult: (result) => {
+          console.log("start")
+          console.log(result)
+          setValue(result);
+        },
+        onError: (err) => {
+          console.error("Speech recognition error:", err);
+        }
+      })
+
+  // Render the component
   return (
     <div>
-      <button onClick={startListening} disabled={listening}>Start Recording</button>
-      <button onClick={stopListening} disabled={!listening}>Stop Recording</button>
-      <button onClick={resetTranscript}>Reset</button>
-      <p>{transcript}</p>
+      {/* Textarea to display the recognized speech text */}
+      <textarea
+        value={value}
+        // Update the value state when text is manually entered
+        onChange={(event) => setValue(event.target.value)}
+      />
+      {/* Button to start listening for speech input */}
+      <button onMouseDown={listen} onMouseUp={stop}>
+        🎤
+      </button>
     </div>
   );
-};
+}
 
 export default RecordButton;

@@ -1,14 +1,19 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, createContext, useContext,} from 'react';
 import Webcam from 'react-webcam';
+import { Button, Icon } from '@chakra-ui/react';
+import { MdCamera } from 'react-icons/md'; 
+import { ImageContext } from '../App'; 
 
-const Camera= () => {
+
+const Camera= ({ onCapture }) => {
   const webcamRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(null);
-
+  const { setImageSrc } = useContext(ImageContext);
   // Function to handle taking a photo
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImageSrc(imageSrc);
+    onCapture(imageSrc);
+    console.log(imageSrc)
   }, [webcamRef]);
 
   return (
@@ -19,13 +24,9 @@ const Camera= () => {
         screenshotFormat="image/jpeg"
         style={{ width: '100%', height: 'auto' }}
       />
-      <button onClick={capture}>Capture Photo</button>
-      {imageSrc && (
-        <div>
-          <h2>Preview:</h2>
-          <img src={imageSrc} alt="Captured" />
-        </div>
-      )}
+         <Button leftIcon={<Icon as={MdCamera} />} onClick={capture} colorScheme="teal">
+      Submit
+    </Button>
     </div>
   );
 };
