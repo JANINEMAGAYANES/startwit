@@ -132,11 +132,12 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
   const [message, setMessage] = useState('');
 
   const upload = async ({ lat, long, formData }) => {
+    console.log(formData)
     const { data, error } = await supabase
     
       .from('reports')
       .insert([
-        { mock_user: 1, category: "incident", description: "incident", latitude: lat, longitude: long, imageUrl: "test"},
+        { mock_user: 1, category: formData?.incident, description: formData?.audio, latitude: lat, longitude: long, imageUrl: formData?.image},
       ])
       .select();
 
