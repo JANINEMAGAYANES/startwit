@@ -41,7 +41,7 @@ const MarkerDrawer = ({ isOpen, onClose, marker }) => {
             <Heading size={'md'}>{marker.category}</Heading>
             <Text size={'xs'}>{marker.description}</Text>
             <Image
-                            src={marker.imageUrl ?marker.imageUrl : 'https://t4.ftcdn.net/jpg/01/07/57/91/360_F_107579101_QVlTG43Fwg9Q6ggwF436MPIBTVpaKKtb.jpg'}
+                            src= 'https://t4.ftcdn.net/jpg/01/07/57/91/360_F_107579101_QVlTG43Fwg9Q6ggwF436MPIBTVpaKKtb.jpg'
                             alt='Image Icon'
                             boxSize='100px'
                         
