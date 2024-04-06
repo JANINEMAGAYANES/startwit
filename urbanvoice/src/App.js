@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './screen/Home';
@@ -21,6 +20,7 @@ function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/Report" element={<Report />} />
       <Route path="/form" element={<Form />} />
+      <Route path="/" element={<Home />} />
       </Routes>
   </Router>
   </ChakraProvider>
