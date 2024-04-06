@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Map from '../components/Map';
-import { Box, Button, Center, Container, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Container, Divider, Image, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { AddIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
 import useMarkers from '../hooks/useMarkers';
 import useNotifications from '../hooks/useNotifications';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, TileLayer, SVGOverlay } from 'react-leaflet';
 import L from 'leaflet';
 
 const DrawerWrapper = ({ children, header, ...drawerProps }) =>
@@ -37,6 +37,12 @@ const MarkerDrawer = ({ isOpen, onClose, marker }) => {
           <VStack align={'start'} spacing={0}>
             <Heading size={'md'}>{marker.category}</Heading>
             <Text size={'xs'}>{marker.description}</Text>
+            <Image
+                            src={marker.imageUrl ?marker.imageUrl : 'https://t4.ftcdn.net/jpg/01/07/57/91/360_F_107579101_QVlTG43Fwg9Q6ggwF436MPIBTVpaKKtb.jpg'}
+                            alt='Image Icon'
+                            boxSize='100px'
+                        
+                          />
           </VStack>
           <Spacer />
           <HStack justify={'center'}>
@@ -69,12 +75,15 @@ const issueIcon = L.divIcon({
 });
 
 const StaticMap = ({ position }) => {
+
+
   return <MapContainer style={{ height: '100%' }} center={[51.505, -0.09]} zoom={13} zoomControl={false} scrollWheelZoom={false} attributionControl={false}>
     <TileLayer
       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     />
     <Marker position={position} icon={issueIcon} />
+
   </MapContainer>
 }
 
