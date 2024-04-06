@@ -20,10 +20,10 @@ const DrawerWrapper = ({ children, header, ...drawerProps }) =>
     </DrawerContent>
   </Drawer>;
 
-const FormDrawer = (props) => {
+const FormDrawer = ({location, ...props}) => {
   const { isOpen, onClose } = props;
   return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1}>
-    <Form onClose={onClose} />
+    <Form location={location} onClose={onClose} />
   </DrawerWrapper>
 }
 
@@ -104,13 +104,14 @@ const Home = () => {
   const notificationsDisclosure = useDisclosure();
   const { markers } = useMarkers();
   const [pickedMarker, setPickedMarker] = useState(null);
+  const [targetLocation, setTargetLocation] = useState(null);
 
   return (
     <>
       <Flex height={'100vh'} dir='column'>
         <Box flex={1}>
           <Center pos='absolute' bottom={0} zIndex={2} width={'100%'} padding={3}>
-            <Button leftIcon={<WarningIcon />} onClick={formDisclosure.onOpen} >
+            <Button leftIcon={<WarningIcon />} onClick={formDisclosure.onOpen}>
               Add report
             </Button>
           </Center>
@@ -121,8 +122,8 @@ const Home = () => {
               setPickedMarker(marker);
               markerDisclosure.onOpen();
             }
-          }} />
-          <FormDrawer {...formDisclosure} />
+          }} onChangeLocation={setTargetLocation} />
+          <FormDrawer location={targetLocation} {...formDisclosure} />
           <MarkerDrawer {...markerDisclosure} marker={pickedMarker} />
           <NotificationsDrawer {...notificationsDisclosure} />
           <div className={'leaflet-top leaflet-left'}>

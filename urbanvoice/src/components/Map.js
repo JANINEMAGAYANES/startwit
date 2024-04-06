@@ -48,23 +48,31 @@ function LocateControl() {
 
 }
 
-function PinLocation() {
+function PinLocation({onChangeLocation}) {
     const [location, setLocation] = useState();
     const map = useMapEvents({
         locationfound({ latlng }) {
             setLocation(latlng);
+            onChangeLocation(latlng);
         },
     });
 
     useEffect(() => { map.locate() }, [map]);
 
-    return location ? <Marker position={location} icon={mapPinIcon}>
+    return location ? <Marker position={location} icon={mapPinIcon} draggable={true} eventHandlers={{
+        dragend: (event) => {
+            const newMarkerPosition = event.target.getLatLng();
+            setLocation([newMarkerPosition.lat, newMarkerPosition.lng]);
+            onChangeLocation([newMarkerPosition.lat, newMarkerPosition.lng]);
+        },
+    }}>
 
     </Marker> : null;
 
 }
 
-export default function Map({ center = null, zoom = 10, markers = [], onPickMarker }) {
+export default function Map({ center = null, zoom = 10, markers = [], onPickMarker, onChangeLocation }) {
+    
     return <MapContainer
         style={{ height: '100%', zIndex: 0 }}
         center={[38, 139.69222]}
@@ -79,7 +87,7 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
             url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
 
-        <PinLocation />
+        <PinLocation onChangeLocation={onChangeLocation}/>
         {markers.map((marker) => <IssueMarker key={marker.id} {...marker} onPick={onPickMarker} />)}
         <LocateControl />
     </MapContainer>
