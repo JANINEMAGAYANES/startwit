@@ -81,7 +81,8 @@ function PinLocation({ onChangeLocation }) {
 }
 
 export default function Map({ center = null, zoom = 10, markers = [], onPickMarker, onChangeLocation }) {
-
+    const bounds =[[12,51 ], [13, 52]]
+      
     return <MapContainer
         style={{ height: '100%', zIndex: 0 }}
         center={[38, 139.69222]}
@@ -99,6 +100,12 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
 
         {markers.map((marker) => <IssueMarker key={marker.id} {...marker} onPick={onPickMarker} />)}
         <PinLocation onChangeLocation={onChangeLocation} />
+        <SVGOverlay attributes={{ stroke: 'red' }} bounds={bounds}>
+      {/* Removed stroke attribute */}
+      <rect x="0" y="0" width="100%" height="100%" fill="none"  stroke="none"/>
+      <circle r="30" cx="40" cy="40" fill="rgba(255, 0, 0, 0.5)" />
+    
+    </SVGOverlay>
         <LocateControl />
     </MapContainer>
 }

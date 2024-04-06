@@ -1,11 +1,9 @@
-import React, { useState, useContext } from 'react';
-import { AudioContext } from '../App';
+import React, { useState } from 'react';
 
 const RecordComponent = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioFile, setAudioFile] = useState('');
   const [speechRecognition, setSpeechRecognition] = useState(null);
-  const { audio, setAudio } = useContext(AudioContext);
 
   const startRecording = () => {
     setIsRecording(true);
@@ -36,7 +34,6 @@ const RecordComponent = () => {
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
           setAudioFile(transcript);
-          setAudio(transcript)
         };
 
         recognition.onerror = (event) => {
@@ -63,12 +60,13 @@ const RecordComponent = () => {
 
   return (
     <div>
+      <h2>Record Component</h2>
       {isRecording ? (
         <button onClick={stopRecording}>Stop Recording</button>
       ) : (
         <button onClick={startRecording}>Start Recording</button>
       )}
-
+      {audioFile && <p>Speech: {audioFile}</p>}
     </div>
   );
 };

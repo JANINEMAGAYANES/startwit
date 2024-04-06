@@ -29,6 +29,7 @@ import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from 'react-icons/bs';
 import Camera from './Camera';
 import RecordButton from './RecordButton';
 import { ImageContext } from '../App';
+import { AudioContext } from '../App';
 import { INCIDENTS } from '../constants';
 import supabase from '../supabase'
 
@@ -47,33 +48,118 @@ const confetti = {
 const CONFETTI_LIGHT = ''
 const CONFETTI_DARK = ''
 
+const RecordComponent = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioFile, setAudioFile] = useState('');
+  const [speechRecognition, setSpeechRecognition] = useState(null);
+  const { audio, setAudio } = useContext(AudioContext);
+  const startRecording = () => {
+    setIsRecording(true);
+
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        setSpeechRecognition(recognition);
+
+        const chunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+          chunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+          const audioUrl = URL.createObjectURL(blob);
+          setAudio(audioUrl)
+          setAudioFile(audioUrl);
+          recognition.stop();
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          setAudio(transcript)
+          setAudioFile(transcript);
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.onend = () => {
+          console.log('Speech recognition ended');
+        };
+
+        recognition.start();
+
+        mediaRecorder.start();
+      })
+      .catch((error) => {
+        console.error('Error accessing microphone:', error);
+      });
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    speechRecognition.stop();
+  };
+
+  return (
+    <div>
+      {isRecording ? (
+        <button onClick={stopRecording}>Stop Recording</button>
+      ) : (
+        <button onClick={startRecording}>Start Recording</button>
+      )}
+      {audioFile && <p>Comment: {audioFile}</p>}
+    </div>
+  );
+};
+
 export default function ContactFormWithSocialButtons({ location, onClose }) {
+  console.log(location)
   const { hasCopied, onCopy } = useClipboard('example@example.com');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState(localStorage.getItem('image') || '');
   const { imageSrc } = useContext(ImageContext);
+  const { audio } = useContext(AudioContext);
 
-  const [incident, setIncident] = useState(null);
+  const [incident, setIncident] = useState("report");
   const [message, setMessage] = useState('');
 
-  const upload = async ({ lat, long }) => {
+  const upload = async ({ lat, lng, formData }) => {
+    console.log(formData)
     const { data, error } = await supabase
+    
       .from('reports')
       .insert([
-        { mock_user: 1, category: incident, description: message, latitude: lat, longitude: long },
+        { mock_user: 1, category: formData?.incident, description: formData?.audio, latitude: lat, longitude: lng, imageUrl: formData?.image},
       ])
       .select();
 
     return { data, error };
   }
   const submit = () => {
+    const formData = {
+      image: imageSrc,
+      audio: audio,
+      message: message, // Replace with the actual location data
+      incident: incident,
+    };
+    console.log(formData)
     if (location) {
-      upload({ lat: location[0], long: location[1] }).then(() => onClose());
+  console.log(location)
+  upload({ ...location,formData }).then(() => onClose());
     } else if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        upload({ lat: position.coords.latitude, long: position.coords.longitude }).then(() => onClose());
+        upload({ lat: position.coords.latitude, long: position.coords.longitude, formData}).then(() => onClose());
       });
+      console.log(formData.audio)
     } else {
       console.log("Geolocation is not available in your browser.");
     }
@@ -217,8 +303,19 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
                             onClick={handleRecordClick}
                           />
                           <RecordButton />
+                       
                         </Box>{' '}
                       </InputGroup>
+                    </FormControl>
+                    <FormControl>
+                      <Textarea
+                        name='comment'
+                        placeholder='Details...'
+                        rows={2}
+                        resize='none'
+                        value={audio ? audio: message}
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
                     </FormControl>
 
                     <FormControl /* isRequired */>
@@ -237,7 +334,7 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
                     <FormControl isRequired>
                       <FormLabel>Type of Incident</FormLabel>
 
-                      <Select placeholder='Incident' name='incident' value={incident} onChange={(e) => setIncident(e.target.value)}>
+                      <Select placeholder='Incident' name='incident' value={incident? incident: "report"} onChange={(e) => setIncident(e.target.value)}>
                         {INCIDENTS.map((incident, index) => <option key={index} value={incident}>{incident.toUpperCase()}</option>)}
                       </Select>
                       {/* <Textarea
@@ -248,16 +345,7 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
                     /> */}
                     </FormControl>
 
-                    <FormControl>
-                      <Textarea
-                        name='comment'
-                        placeholder='Details...'
-                        rows={2}
-                        resize='none'
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                      />
-                    </FormControl>
+                
 
                     <Button
                       colorScheme='blue'
