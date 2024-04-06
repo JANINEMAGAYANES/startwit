@@ -5,7 +5,7 @@ import { AddIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
 import useMarkers from '../hooks/useMarkers';
 import useNotifications from '../hooks/useNotifications';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, TileLayer, SVGOverlay } from 'react-leaflet';
 import L from 'leaflet';
 
 const DrawerWrapper = ({ children, header, ...drawerProps }) =>
@@ -69,12 +69,15 @@ const issueIcon = L.divIcon({
 });
 
 const StaticMap = ({ position }) => {
+
+
   return <MapContainer style={{ height: '100%' }} center={[51.505, -0.09]} zoom={13} zoomControl={false} scrollWheelZoom={false} attributionControl={false}>
     <TileLayer
       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     />
     <Marker position={position} icon={issueIcon} />
+
   </MapContainer>
 }
 

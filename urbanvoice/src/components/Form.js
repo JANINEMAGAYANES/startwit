@@ -128,26 +128,35 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
   const { imageSrc } = useContext(ImageContext);
   const { audio } = useContext(AudioContext);
 
-  const [incident, setIncident] = useState(null);
+  const [incident, setIncident] = useState("report");
   const [message, setMessage] = useState('');
 
-  const upload = async ({ lat, long }) => {
+  const upload = async ({ lat, long, formData }) => {
     const { data, error } = await supabase
+    
       .from('reports')
       .insert([
-        { mock_user: 1, category: incident, description: message, latitude: lat, longitude: long },
+        { mock_user: 1, category: "incident", description: "incident", latitude: lat, longitude: long, imageUrl: "test"},
       ])
       .select();
 
     return { data, error };
   }
   const submit = () => {
+    const formData = {
+      image: imageSrc,
+      audio: audio,
+      message: message, // Replace with the actual location data
+      incident: incident,
+    };
+    console.log(formData)
     if (location) {
-      upload({ lat: location[0], long: location[1] }).then(() => onClose());
+      upload({ lat: location[0], long: location[1],formData }).then(() => onClose());
     } else if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        upload({ lat: position.coords.latitude, long: position.coords.longitude }).then(() => onClose());
+        upload({ lat: position.coords.latitude, long: position.coords.longitude, formData}).then(() => onClose());
       });
+      console.log(formData.audio)
     } else {
       console.log("Geolocation is not available in your browser.");
     }
@@ -322,7 +331,7 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
                     <FormControl isRequired>
                       <FormLabel>Type of Incident</FormLabel>
 
-                      <Select placeholder='Incident' name='incident' value={incident} onChange={(e) => setIncident(e.target.value)}>
+                      <Select placeholder='Incident' name='incident' value={incident? incident: "report"} onChange={(e) => setIncident(e.target.value)}>
                         {INCIDENTS.map((incident, index) => <option key={index} value={incident}>{incident.toUpperCase()}</option>)}
                       </Select>
                       {/* <Textarea
