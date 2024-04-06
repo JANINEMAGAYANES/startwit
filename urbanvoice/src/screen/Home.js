@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Map from '../components/Map';
-import { Box, Button, Center, Container, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { Box, Button, Center, Container, Divider, Image, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { AddIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
 import useMarkers from '../hooks/useMarkers';
@@ -37,6 +37,12 @@ const MarkerDrawer = ({ isOpen, onClose, marker }) => {
           <VStack align={'start'} spacing={0}>
             <Heading size={'md'}>{marker.category}</Heading>
             <Text size={'xs'}>{marker.description}</Text>
+            <Image
+                            src={marker.imageUrl ?marker.imageUrl : 'https://t4.ftcdn.net/jpg/01/07/57/91/360_F_107579101_QVlTG43Fwg9Q6ggwF436MPIBTVpaKKtb.jpg'}
+                            alt='Image Icon'
+                            boxSize='100px'
+                        
+                          />
           </VStack>
           <Spacer />
           <HStack justify={'center'}>

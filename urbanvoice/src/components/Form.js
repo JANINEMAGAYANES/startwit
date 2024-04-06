@@ -121,6 +121,7 @@ const RecordComponent = () => {
 };
 
 export default function ContactFormWithSocialButtons({ location, onClose }) {
+  console.log(location)
   const { hasCopied, onCopy } = useClipboard('example@example.com');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
@@ -131,13 +132,13 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
   const [incident, setIncident] = useState("report");
   const [message, setMessage] = useState('');
 
-  const upload = async ({ lat, long, formData }) => {
+  const upload = async ({ lat, lng, formData }) => {
     console.log(formData)
     const { data, error } = await supabase
     
       .from('reports')
       .insert([
-        { mock_user: 1, category: formData?.incident, description: formData?.audio, latitude: lat, longitude: long, imageUrl: formData?.image},
+        { mock_user: 1, category: formData?.incident, description: formData?.audio, latitude: lat, longitude: lng, imageUrl: formData?.image},
       ])
       .select();
 
@@ -152,7 +153,8 @@ export default function ContactFormWithSocialButtons({ location, onClose }) {
     };
     console.log(formData)
     if (location) {
-      upload({ lat: location[0], long: location[1],formData }).then(() => onClose());
+  console.log(location)
+  upload({ ...location,formData }).then(() => onClose());
     } else if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(function (position) {
         upload({ lat: position.coords.latitude, long: position.coords.longitude, formData}).then(() => onClose());
