@@ -1,12 +1,21 @@
 import 'leaflet/dist/leaflet.css';
 import { useCallback, useEffect, useState } from 'react';
-import L, { latLng } from 'leaflet';
+import L from 'leaflet';
 import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
 import { IconButton } from '@chakra-ui/react';
+import { INCIDENT_ICONS } from '../constants';
 
 
 const CLOSEUP_ZOOM = 13;
 const FLY_DURATION = 0.7;
+
+const issueIcons = Object.fromEntries(Object.entries(INCIDENT_ICONS).map(([label, icon]) => {
+    return [label, L.divIcon({
+        html: `<span style="font-size: 2em; background-color: white; border: 1px solid; border-radius: 100%; width: 34px; height: 40px; z-index: -1">${icon}</span>`,
+        iconSize: [20, 20],
+        className: ''
+    })]
+}));
 
 const issueIcon = L.divIcon({
     html: '<span style="font-size: 3em; color: Tomato;"><i class="fa-solid fa-location-dot fa-xl"></i></span>',
@@ -20,7 +29,7 @@ const mapPinIcon = L.divIcon({
     className: ''
 });
 
-function IssueMarker({ id, position, popupConfig, onPick = null }) {
+function IssueMarker({ id, position, category, onPick = null }) {
     const map = useMapEvents({});
 
     const selectMarker = useCallback((() => {
@@ -28,7 +37,7 @@ function IssueMarker({ id, position, popupConfig, onPick = null }) {
         onPick(id);
     }), [id, map, onPick, position]);
 
-    return <Marker position={position} icon={issueIcon} eventHandlers={{
+    return <Marker position={position} icon={issueIcons[category] ?? issueIcon} eventHandlers={{
         click: selectMarker,
     }} />
 }
@@ -48,7 +57,7 @@ function LocateControl() {
 
 }
 
-function PinLocation({onChangeLocation}) {
+function PinLocation({ onChangeLocation }) {
     const [location, setLocation] = useState();
     const map = useMapEvents({
         locationfound({ latlng }) {
@@ -59,7 +68,7 @@ function PinLocation({onChangeLocation}) {
 
     useEffect(() => { map.locate() }, [map]);
 
-    return location ? <Marker position={location} icon={mapPinIcon} draggable={true} eventHandlers={{
+    return location ? <Marker position={location} icon={mapPinIcon} draggable={true} zIndexOffset={10} eventHandlers={{
         dragend: (event) => {
             const newMarkerPosition = event.target.getLatLng();
             setLocation([newMarkerPosition.lat, newMarkerPosition.lng]);
@@ -72,7 +81,7 @@ function PinLocation({onChangeLocation}) {
 }
 
 export default function Map({ center = null, zoom = 10, markers = [], onPickMarker, onChangeLocation }) {
-    
+
     return <MapContainer
         style={{ height: '100%', zIndex: 0 }}
         center={[38, 139.69222]}
@@ -87,8 +96,8 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
             url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
 
-        <PinLocation onChangeLocation={onChangeLocation}/>
         {markers.map((marker) => <IssueMarker key={marker.id} {...marker} onPick={onPickMarker} />)}
+        <PinLocation onChangeLocation={onChangeLocation} />
         <LocateControl />
     </MapContainer>
 }

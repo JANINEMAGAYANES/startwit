@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Map from '../components/Map';
-import { Box, Button, Card, Center, Container, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
-import { AddIcon, MinusIcon, WarningIcon } from '@chakra-ui/icons';
+import { Box, Button, Center, Container, Divider, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import { AddIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
 import useMarkers from '../hooks/useMarkers';
 import useNotifications from '../hooks/useNotifications';

@@ -6,3 +6,13 @@ export const INCIDENTS = [
     'accident',
     'road construction'
 ]
+
+export const INCIDENT_ICONS = {
+    'fire': '🔥',
+    'pothole': '🕳',
+    'traffic jam': '🚗',
+    'crime': '🔪',
+    'accident': '💥',
+    'road construction': '🚧',
+}
+
