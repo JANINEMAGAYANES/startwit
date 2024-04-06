@@ -1,71 +1,36 @@
-export function useMarker({ markerId }) {
-    // const togll
-}
+import { useEffect, useState } from 'react';
+import supabase from '../supabase';
 
 export default function useMarkers() {
-    const markers = [
-        {
-            id: '1', position: [51.505, -0.09],
-            category: 'Traffic accident',
-            description: 'Car crash in intersection',
-            agrees: 10,
-            // disagrees: 3,
-            comments: [
-                {
-                    id: 1,
-                    user: '@jon',
-                    comment: 'thanks'
-                },
-                {
-                    id: 2,
-                    user: '@juan',
-                    comment: '👍'
-                },
-                {
-                    id: 3,
-                    user: '@jon',
-                    comment: 'thanks'
-                },
-                {
-                    id: 4,
+    const [markers, setMarkers] = useState([]);
 
-                    user: '@juan',
-                    comment: '👍'
-                },
-                {
-                    id: 5,
-
-                    user: '@jon',
-                    comment: 'thanks'
-                },
-                {
-                    id: 6,
-                    user: '@juan',
-                    comment: '👍'
-                },
-                {
-                    id: 7,
-                    user: '@jon',
-                    comment: 'thanks'
-                },
-                {
-                    id: 8,
-                    user: '@juan',
-                    comment: '👍'
-                },
-                {
-                    id: 9,
-                    user: '@jon',
-                    comment: 'thanks'
-                },
-                {
-                    id: 10,
-                    user: '@juan',
-                    comment: '👍'
+    useEffect(() => {
+        supabase
+            .from('reports')
+            .select(`
+                id,
+                latitude,
+                longitude,
+                category,
+                description,
+                agrees:agreements,
+                comment_count,
+                mock_user,
+                comments (
+                    id,
+                    comment,
+                    user:mock_user
+                )
+            `).then(({ data, error }) => {
+                if (error) {
+                    console.error(error);
+                } else {
+                    setMarkers(data.map(({ obj, latitude, longitude }) =>
+                        ({ position: [latitude, longitude], ...obj })
+                    ));
                 }
-            ]
-        }
-    ];
+            });
+    }, [])
 
     return { markers };
 }
