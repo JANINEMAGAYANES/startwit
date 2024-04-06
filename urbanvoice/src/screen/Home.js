@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Map from '../components/Map';
 import { Box, Button, Center, Container, Divider, Image, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Flex, Heading, HStack, Icon, IconButton, Input, Spacer, Stack, Tag, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { AddIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
-import useMarkers from '../hooks/useMarkers';
+import useMarkers, { useMarker } from '../hooks/useMarkers';
 import useNotifications from '../hooks/useNotifications';
 import { MapContainer, Marker, TileLayer, SVGOverlay } from 'react-leaflet';
 import L from 'leaflet';
 
-const DrawerWrapper = ({ children, header, ...drawerProps }) =>
+const DrawerWrapper = ({ children, header, useDivider = false, ...drawerProps }) =>
   <Drawer {...drawerProps}>
     <DrawerOverlay />
     <DrawerContent>
       <DrawerCloseButton />
       <DrawerHeader textAlign={'center'}>{header ?? null}</DrawerHeader>
+      {useDivider ? <Divider /> : null}
       <DrawerBody>
         {children}
       </DrawerBody>
     </DrawerContent>
   </Drawer>;
 
-const FormDrawer = ({location, ...props}) => {
+const FormDrawer = ({ location, ...props }) => {
   const { isOpen, onClose } = props;
   return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1}>
     <Form location={location} onClose={onClose} />
@@ -29,6 +30,8 @@ const FormDrawer = ({location, ...props}) => {
 
 const MarkerDrawer = ({ isOpen, onClose, marker }) => {
   const [newComment, setNewComment] = useState('');
+  // const { mockUser } = useMemo(() => Math.random)
+  // const { addComment } = useMarker({ id: marker?.id });
 
   return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1} maxHeight={'50vh'}>
     {marker ?
@@ -90,12 +93,16 @@ const StaticMap = ({ position }) => {
 const NotificationsDrawer = (props) => {
   const { isOpen, onClose } = props;
   const { notifications } = useNotifications();
-  return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1} size='full' header={<Text>Notifications</Text>}>
+  return <DrawerWrapper placement={'bottom'} useDivider={true} onClose={onClose} isOpen={isOpen} zIndex={1} size='full' header={<Text>Notifications</Text>}>
     <Container maxW={'container.md'} width={'100%'}>
       <VStack overflowY={'scroll'} dir='column' align={'stretch'} py={3} width={'100%'}>
         {notifications.map((notif) =>
           <Box key={notif.id} borderWidth='1px' borderRadius='lg' p={2}>
-            <Text>{notif.category}</Text>
+            <Flex dir='row'>
+              <Text>A {notif.category} was reported close by.</Text>
+              <Spacer />
+              <Button leftIcon={<AddIcon />} size={'xs'} colorScheme='cyan' variant={'outline'}>Agree</Button>
+            </Flex>
             <Box width={'100%'} height={'10rem'} py={3}>
               <StaticMap position={{ lat: notif.centroid_latitude, lng: notif.centroid_longitude }} />
             </Box>
