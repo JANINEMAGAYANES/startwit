@@ -1,4 +1,4 @@
-import { useState,useContext, } from 'react';
+import { useState, useContext, } from 'react';
 import {
   Box,
   Button,
@@ -23,11 +23,14 @@ import {
   ModalCloseButton,
   ModalBody,
   VStack,
+  Select,
 } from '@chakra-ui/react';
 import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from 'react-icons/bs';
 import Camera from './Camera';
 import RecordButton from './RecordButton';
 import { ImageContext } from '../App'; 
+import { INCIDENTS } from '../constants';
+import supabase from '../supabase'
 
 const confetti = {
   light: {
@@ -44,12 +47,37 @@ const confetti = {
 const CONFETTI_LIGHT = ''
 const CONFETTI_DARK = ''
 
-export default function ContactFormWithSocialButtons() {
+export default function ContactFormWithSocialButtons({ onClose }) {
   const { hasCopied, onCopy } = useClipboard('example@example.com');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isRecordOpen, setIsRecordOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState(localStorage.getItem('image') || '');
   const { imageSrc } = useContext(ImageContext);
+
+  const [incident, setIncident] = useState(null);
+  const [message, setMessage] = useState('');
+
+  const upload = async ({ lat, long }) => {
+    const { data, error } = await supabase
+      .from('reports')
+      .insert([
+        { mock_user: 1, category: incident, description: message, latitude: lat, longitude: long },
+      ])
+      .select();
+
+    return { data, error };
+  }
+  const submit = () => {
+    console.log('submitting');
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        console.log('found location', position);
+        upload({ lat: position.coords.latitude, long: position.coords.longitude }).then(() => onClose());
+      });
+    } else {
+      console.log("Geolocation is not available in your browser.");
+    }
+  }
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];

@@ -21,7 +21,7 @@ const DrawerWrapper = ({ children, ...drawerProps }) =>
 const FormDrawer = (props) => {
   const { isOpen, onClose } = props;
   return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1}>
-    <Form />
+    <Form onClose={onClose}/>
   </DrawerWrapper>
 }
 
