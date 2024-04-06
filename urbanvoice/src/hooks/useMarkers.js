@@ -25,7 +25,7 @@ export default function useMarkers() {
                 if (error) {
                     console.error(error);
                 } else {
-                    setMarkers(data.map(({ obj, latitude, longitude }) =>
+                    setMarkers(data.map(({ latitude, longitude, ...obj }) =>
                         ({ position: [latitude, longitude], ...obj })
                     ));
                 }
