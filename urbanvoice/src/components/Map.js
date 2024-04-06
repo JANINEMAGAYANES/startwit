@@ -72,7 +72,8 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
         minZoom={3}
         maxZoom={19}
         maxBounds={[[-85.06, -180], [85.06, 180]]}
-        scrollWheelZoom={true}>
+        scrollWheelZoom={true}
+        zoomControl={false}>
         <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'

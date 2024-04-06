@@ -4,14 +4,16 @@ import { Box, Button, Card, Center, Container, Divider, Drawer, DrawerBody, Draw
 import { AddIcon, MinusIcon, WarningIcon } from '@chakra-ui/icons';
 import Form from '../components/Form';
 import useMarkers from '../hooks/useMarkers';
-import { stringify } from 'json5';
+import useNotifications from '../hooks/useNotifications';
+import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import L from 'leaflet';
 
-const DrawerWrapper = ({ children, ...drawerProps }) =>
+const DrawerWrapper = ({ children, header, ...drawerProps }) =>
   <Drawer {...drawerProps}>
     <DrawerOverlay />
     <DrawerContent>
       <DrawerCloseButton />
-      <DrawerHeader></DrawerHeader>
+      <DrawerHeader textAlign={'center'}>{header ?? null}</DrawerHeader>
       <DrawerBody>
         {children}
       </DrawerBody>
@@ -21,7 +23,7 @@ const DrawerWrapper = ({ children, ...drawerProps }) =>
 const FormDrawer = (props) => {
   const { isOpen, onClose } = props;
   return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1}>
-    <Form onClose={onClose}/>
+    <Form onClose={onClose} />
   </DrawerWrapper>
 }
 
@@ -60,9 +62,46 @@ const MarkerDrawer = ({ isOpen, onClose, marker }) => {
   </DrawerWrapper>
 }
 
+const issueIcon = L.divIcon({
+  html: '<span style="font-size: 3em; color: Tomato;"><i class="fa-solid fa-location-dot fa-xl"></i></span>',
+  iconSize: [20, 20],
+  className: ''
+});
+
+const StaticMap = ({ position }) => {
+  return <MapContainer style={{ height: '100%' }} center={[51.505, -0.09]} zoom={13} zoomControl={false} scrollWheelZoom={false} attributionControl={false}>
+    <TileLayer
+      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    />
+    <Marker position={position} icon={issueIcon} />
+  </MapContainer>
+}
+
+const NotificationsDrawer = (props) => {
+  const { isOpen, onClose } = props;
+  const { notifications } = useNotifications();
+  return <DrawerWrapper placement={'bottom'} onClose={onClose} isOpen={isOpen} zIndex={1} size='full' header={<Text>Notifications</Text>}>
+    <Container maxW={'container.md'} width={'100%'}>
+      <VStack overflowY={'scroll'} dir='column' align={'stretch'} py={3} width={'100%'}>
+        {notifications.map((notif) =>
+          <Box key={notif.id} borderWidth='1px' borderRadius='lg' p={2}>
+            <Text>{notif.category}</Text>
+            <Box width={'100%'} height={'10rem'} py={3}>
+              <StaticMap position={{ lat: notif.centroid_latitude, lng: notif.centroid_longitude }} />
+            </Box>
+          </Box>
+        )}
+      </VStack>
+    </Container>
+  </DrawerWrapper>
+}
+
+
 const Home = () => {
   const formDisclosure = useDisclosure();
   const markerDisclosure = useDisclosure();
+  const notificationsDisclosure = useDisclosure();
   const { markers } = useMarkers();
   const [pickedMarker, setPickedMarker] = useState(null);
 
@@ -85,6 +124,10 @@ const Home = () => {
           }} />
           <FormDrawer {...formDisclosure} />
           <MarkerDrawer {...markerDisclosure} marker={pickedMarker} />
+          <NotificationsDrawer {...notificationsDisclosure} />
+          <div className={'leaflet-top leaflet-left'}>
+            <IconButton className="leaflet-control leaflet-bar" icon={<i className="fa-solid fa-bell"></i>} onClick={notificationsDisclosure.onOpen} />
+          </div>
         </Box>
       </Flex>
     </>
