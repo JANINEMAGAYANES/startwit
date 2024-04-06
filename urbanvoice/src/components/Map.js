@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 import { useCallback, useEffect, useState } from 'react';
 import L from 'leaflet';
-import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, useMapEvents, Marker, Circle } from 'react-leaflet';
 import { IconButton } from '@chakra-ui/react';
 import { INCIDENT_ICONS } from '../constants';
 
@@ -95,6 +95,7 @@ export default function Map({ center = null, zoom = 10, markers = [], onPickMark
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
+        <Circle center={[52.392266067801614, 13.12520444729924]} pathOptions={{ fillColor: 'blue' }} radius={200} />
 
         {markers.map((marker) => <IssueMarker key={marker.id} {...marker} onPick={onPickMarker} />)}
         <PinLocation onChangeLocation={onChangeLocation} />
