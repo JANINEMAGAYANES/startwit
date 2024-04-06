@@ -8,11 +8,15 @@ import { ChakraProvider } from '@chakra-ui/react'
 
 
 export const ImageContext = createContext();
+export const AudioContext = createContext();
+
 function App() {
   const [imageSrc, setImageSrc] = useState(null);
+  const [audio, setAudio] = useState("");
 
   return (
     <ImageContext.Provider value={{ imageSrc, setImageSrc }}>
+    <AudioContext.Provider value={{ audio, setAudio }}>
 
     <ChakraProvider>
     <Router>
@@ -23,8 +27,10 @@ function App() {
       <Route path="/" element={<Home />} />
       </Routes>
   </Router>
-  </ChakraProvider>
+  </ChakraProvider>  
+  </AudioContext.Provider>
   </ImageContext.Provider>
+
   );
 }
 
