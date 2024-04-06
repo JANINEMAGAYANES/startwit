@@ -38,7 +38,7 @@ const MarkerDrawer = ({ isOpen, onClose, marker }) => {
             <Heading size={'md'}>{marker.category}</Heading>
             <Text size={'xs'}>{marker.description}</Text>
             <Image
-                            src={marker.imageUrl ?marker.imageUrl : 'https://t4.ftcdn.net/jpg/01/07/57/91/360_F_107579101_QVlTG43Fwg9Q6ggwF436MPIBTVpaKKtb.jpg'}
+                            src={marker.imageUrl ?marker.imageUrl : 'https://bilder.deutschlandfunk.de/FI/LE/_4/12/FILE_41270ea00d75a1eb78b4b1b53f6d4d87/eyeem-100000298-131703441-sabbir-ahmed-jpg-100-1920x1080.jpg'}
                             alt='Image Icon'
                             boxSize='100px'
                         
